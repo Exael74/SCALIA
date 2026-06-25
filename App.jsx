@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import translations from './translations';
+import logoImg from './logo.png';
+import waLogoImg from './whatsappLogo.png';
 
 /* ─── HOOKS ────────────────────────────────────────────────────── */
 
@@ -14,9 +16,9 @@ function useGlobalParticles(canvasRef) {
 
     let w, h, animId;
     let mouseX = -9999, mouseY = -9999;
-    const PARTICLE_COUNT = 120;
-    const LINK_DIST = 150;
-    const MOUSE_RADIUS = 180;
+    const isMobile = window.innerWidth < 768;
+    const PARTICLE_COUNT = isMobile ? 35 : 85;
+    const MOUSE_RADIUS = isMobile ? 80 : 180;
 
     function resize() {
       w = canvas.width = window.innerWidth;
@@ -36,6 +38,8 @@ function useGlobalParticles(canvasRef) {
       const isBlue = Math.random() > 0.5;
       const startX = Math.random() * (window.innerWidth || 1400);
       const startY = Math.random() * (window.innerHeight || 900);
+      const maxAlpha = isMobile ? 0.20 : 0.6;
+      const minAlpha = isMobile ? 0.05 : 0.2;
       return {
         x: startX,
         y: startY,
@@ -43,10 +47,10 @@ function useGlobalParticles(canvasRef) {
         baseY: startY,
         vxDisplace: 0,
         vyDisplace: 0,
-        r: 1.0 + Math.random() * 2.2,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        alpha: 0.35 + Math.random() * 0.45,
+        r: (isMobile ? 0.8 : 1.0) + Math.random() * (isMobile ? 1.0 : 2.2),
+        vx: (Math.random() - 0.5) * (isMobile ? 0.12 : 0.35),
+        vy: (Math.random() - 0.5) * (isMobile ? 0.12 : 0.35),
+        alpha: minAlpha + Math.random() * (maxAlpha - minAlpha),
         pulseSpeed: 0.005 + Math.random() * 0.01,
         pulseOffset: Math.random() * Math.PI * 2,
         colorBase: isBlue ? '76, 120, 212' : '148, 163, 184',
@@ -109,48 +113,6 @@ function useGlobalParticles(canvasRef) {
     function draw() {
       ctx.clearRect(0, 0, w, h);
 
-      // Connection lines
-      for (let i = 0; i < particles.length; i++) {
-        const p1 = particles[i];
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < LINK_DIST) {
-            const alpha = 0.22 * (1 - dist / LINK_DIST);
-            ctx.beginPath();
-            const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-            grad.addColorStop(0, `rgba(${p1.colorBase}, ${alpha})`);
-            grad.addColorStop(1, `rgba(${p2.colorBase}, ${alpha})`);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 0.65;
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Mouse connection lines
-      particles.forEach(p => {
-        const dx = p.x - mouseX;
-        const dy = p.y - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < MOUSE_RADIUS) {
-          const alpha = 0.35 * (1 - dist / MOUSE_RADIUS);
-          ctx.beginPath();
-          const grad = ctx.createLinearGradient(p.x, p.y, mouseX, mouseY);
-          grad.addColorStop(0, `rgba(${p.colorBase}, ${alpha})`);
-          grad.addColorStop(1, `rgba(148, 163, 184, ${alpha * 1.2})`);
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 1.0;
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouseX, mouseY);
-          ctx.stroke();
-        }
-      });
-
       // Dots with glow
       particles.forEach(p => {
         const currentAlpha = p._alpha || p.alpha;
@@ -159,10 +121,12 @@ function useGlobalParticles(canvasRef) {
         ctx.fillStyle = `rgba(${p.colorBase}, ${currentAlpha})`;
         ctx.fill();
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 4.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.colorBase}, ${currentAlpha * 0.22})`;
-        ctx.fill();
+        if (!isMobile) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.colorBase}, ${currentAlpha * 0.22})`;
+          ctx.fill();
+        }
       });
     }
 
@@ -547,7 +511,7 @@ function App() {
       <header className={`topbar${topbarScrolled ? ' scrolled' : ''}`}>
         <div className="brand-logo-container">
           <a className="brand" href="#inicio" aria-label="SCALIA inicio">
-            <span className="brand-name">SCALIA</span>
+            <img src={logoImg} className="brand-logo" alt="SCALIA Logo" />
           </a>
         </div>
 
@@ -565,10 +529,10 @@ function App() {
 
         <div className="topbar-actions">
           <div className="locale-switch" aria-label="Selector de idioma">
-            <button className={`locale${locale === 'es' ? ' active' : ''}`} type="button" onClick={() => setLocale('es')}>CO</button>
-            <button className={`locale${locale === 'en' ? ' active' : ''}`} type="button" onClick={() => setLocale('en')}>US</button>
+            <button className={`locale${locale === 'es' ? ' active' : ''}`} type="button" onClick={() => setLocale('es')}>SPA</button>
+            <button className={`locale${locale === 'en' ? ' active' : ''}`} type="button" onClick={() => setLocale('en')}>ENG</button>
           </div>
-          <MagneticButton className="button-header-cta" href="#contacto">{t('nav.cta')}</MagneticButton>
+          <MagneticButton className="button-header-cta" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">{t('nav.cta')}</MagneticButton>
         </div>
       </header>
 
@@ -592,7 +556,7 @@ function App() {
             </h1>
             <p className="hero-copy">{t('hero.copy')}</p>
             <div className="hero-actions">
-              <MagneticButton className="button button-premium hero-cta-anim" href="#contacto">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
+              <MagneticButton className="button button-premium hero-cta-anim" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
               <MagneticButton className="button button-ghost hero-cta-anim hero-cta-delay" href="#como-funciona">{t('hero.cta.cases')}</MagneticButton>
             </div>
           </div>
@@ -665,7 +629,7 @@ function App() {
               <h2 className="section-title section-title-dark small-margin">{t('decision.title')}</h2>
               <p className="section-copy section-copy-dark subtle">{t('decision.copy')}</p>
             </div>
-            <MagneticButton className="button button-primary reveal-right glow-button" href="#contacto">{t('decision.cta')} <span aria-hidden="true">→</span></MagneticButton>
+             <MagneticButton className="button button-primary reveal-right glow-button" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">{t('decision.cta')} <span aria-hidden="true">→</span></MagneticButton>
           </div>
         </section>
 
@@ -785,7 +749,7 @@ function App() {
                   {index === activeMethodStep ? <span className="method-arrow" aria-hidden="true">→</span> : <span />}
                 </div>
               ))}
-              <MagneticButton className="button button-dark-cta" href="#contacto" style={{ marginTop: '2rem', display: 'inline-flex' }}>
+              <MagneticButton className="button button-dark-cta" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer" style={{ marginTop: '2rem', display: 'inline-flex' }}>
                 {t('method.cta')} <span aria-hidden="true">→</span>
               </MagneticButton>
             </div>
@@ -834,11 +798,8 @@ function App() {
               <p className="section-copy">{t('contact.copy')}</p>
 
               <div className="contact-actions">
-                <MagneticButton className="button button-success glow-button-green" href="https://wa.me/573001234567" target="_blank" rel="noreferrer">
+                <MagneticButton className="button button-success glow-button-green" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">
                   {t('contact.whatsapp')}
-                </MagneticButton>
-                <MagneticButton className="button button-contact button-ghost" href="mailto:hola@scalia.com">
-                  {t('contact.email')}
                 </MagneticButton>
               </div>
 
@@ -878,9 +839,7 @@ function App() {
           <div>
             <p className="footer-label">{t('footer.connect')}</p>
             <div className="footer-links">
-              <a href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href="https://wa.me/573001234567" target="_blank" rel="noreferrer">WhatsApp</a>
-              <a href="mailto:hola@scalia.com">Email</a>
+              <a href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">WhatsApp</a>
             </div>
           </div>
         </div>
@@ -891,8 +850,8 @@ function App() {
       </footer>
 
       {/* ── FLOATING WA ── */}
-      <a className="floating-whatsapp" href="https://wa.me/573001234567" target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp">
-        {t('floating.wa')}
+      <a className="floating-whatsapp" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp">
+        <img src={waLogoImg} className="floating-whatsapp-icon" alt="WhatsApp" />
       </a>
 
       {/* ── MODAL ── */}
@@ -936,7 +895,7 @@ function App() {
               </ul>
             </div>
 
-            <MagneticButton className="button button-premium modal-cta" href="#contacto" onClick={() => setModalService(null)}>
+            <MagneticButton className="button button-premium modal-cta" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer" onClick={() => setModalService(null)}>
               {t('services.cta')} <span aria-hidden="true">→</span>
             </MagneticButton>
           </div>
