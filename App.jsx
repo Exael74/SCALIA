@@ -49,7 +49,7 @@ function useGlobalParticles(canvasRef) {
         alpha: 0.35 + Math.random() * 0.45,
         pulseSpeed: 0.005 + Math.random() * 0.01,
         pulseOffset: Math.random() * Math.PI * 2,
-        colorBase: isBlue ? '76, 120, 212' : '201, 169, 110',
+        colorBase: isBlue ? '76, 120, 212' : '148, 163, 184',
       };
     });
 
@@ -142,7 +142,7 @@ function useGlobalParticles(canvasRef) {
           ctx.beginPath();
           const grad = ctx.createLinearGradient(p.x, p.y, mouseX, mouseY);
           grad.addColorStop(0, `rgba(${p.colorBase}, ${alpha})`);
-          grad.addColorStop(1, `rgba(201, 169, 110, ${alpha * 1.2})`);
+          grad.addColorStop(1, `rgba(148, 163, 184, ${alpha * 1.2})`);
           ctx.strokeStyle = grad;
           ctx.lineWidth = 1.0;
           ctx.moveTo(p.x, p.y);
@@ -184,6 +184,7 @@ function useGlobalParticles(canvasRef) {
     };
   }, [canvasRef]);
 }
+
 
 /** Enhanced Scroll reveal with IntersectionObserver — supports staggered children */
 function useScrollReveal() {
@@ -337,6 +338,42 @@ function useTopbarScroll() {
   return scrolled;
 }
 
+/** Scroll active section spy hook */
+function useScrollSpy(ids, offset = 160) {
+  const [activeId, setActiveId] = useState('');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + offset;
+
+      if (window.scrollY < 200) {
+        setActiveId('');
+        return;
+      }
+
+      let currentId = '';
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            currentId = id;
+            break;
+          }
+        }
+      }
+      setActiveId(currentId);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [ids, offset]);
+
+  return activeId;
+}
+
 /** Magnetic hover effect for buttons */
 function MagneticButton({ children, className, href, onClick, ...props }) {
   const ref = useRef(null);
@@ -443,6 +480,7 @@ function App() {
   useParallax();
   const { dotRef, ringRef } = useCursor();
   const topbarScrolled = useTopbarScroll();
+  const activeSection = useScrollSpy(['servicios', 'como-funciona', 'diferencial']);
 
   useEffect(() => { setActiveHeroWord(0); }, [heroWords]);
 
@@ -507,17 +545,22 @@ function App() {
 
       {/* ── TOPBAR ── */}
       <header className={`topbar${topbarScrolled ? ' scrolled' : ''}`}>
-        <a className="brand" href="#inicio" aria-label="SCALIA inicio">
-          <span className="brand-mark shimmer-icon">✦</span>
-          <span className="brand-name">SCALIA</span>
-        </a>
+        <div className="brand-logo-container">
+          <a className="brand" href="#inicio" aria-label="SCALIA inicio">
+            <span className="brand-name">SCALIA</span>
+          </a>
+        </div>
 
         <nav className="desktop-nav" aria-label="Navegación principal">
-          <a href="#inicio">{t('nav.home')}</a>
-          <a href="#servicios">{t('nav.services')}</a>
-          <a href="#como-funciona">{t('nav.how')}</a>
-          <a href="#diferencial">{t('nav.difference')}</a>
-          <a href="#contacto">{t('nav.contact')}</a>
+          <a href="#servicios" className={`nav-pill${activeSection === 'servicios' ? ' active' : ''}`}>
+            {locale === 'es' ? 'DISEÑO' : 'DESIGN'}
+          </a>
+          <a href="#como-funciona" className={`nav-pill${activeSection === 'como-funciona' ? ' active' : ''}`}>
+            {locale === 'es' ? 'CRECIMIENTO' : 'GROWTH'}
+          </a>
+          <a href="#diferencial" className={`nav-pill${activeSection === 'diferencial' ? ' active' : ''}`}>
+            {locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING'}
+          </a>
         </nav>
 
         <div className="topbar-actions">
@@ -525,7 +568,7 @@ function App() {
             <button className={`locale${locale === 'es' ? ' active' : ''}`} type="button" onClick={() => setLocale('es')}>CO</button>
             <button className={`locale${locale === 'en' ? ' active' : ''}`} type="button" onClick={() => setLocale('en')}>US</button>
           </div>
-          <MagneticButton className="button button-gold button-small" href="#contacto">{t('nav.cta')}</MagneticButton>
+          <MagneticButton className="button-header-cta" href="#contacto">{t('nav.cta')}</MagneticButton>
         </div>
       </header>
 
@@ -540,7 +583,6 @@ function App() {
           </div>
 
           <div className="container hero-content">
-            <p className="eyebrow hero-eyebrow-anim">{t('hero.eyebrow')}</p>
             <h1 className="hero-title">
               <span className="hero-line-1">{t('hero.title.before')}</span>
               <span key={activeHeroWord + locale} className="accent hero-word-carousel">
@@ -550,7 +592,7 @@ function App() {
             </h1>
             <p className="hero-copy">{t('hero.copy')}</p>
             <div className="hero-actions">
-              <MagneticButton className="button button-gold hero-cta-anim" href="#contacto">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
+              <MagneticButton className="button button-premium hero-cta-anim" href="#contacto">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
               <MagneticButton className="button button-ghost hero-cta-anim hero-cta-delay" href="#como-funciona">{t('hero.cta.cases')}</MagneticButton>
             </div>
           </div>
@@ -894,7 +936,7 @@ function App() {
               </ul>
             </div>
 
-            <MagneticButton className="button button-gold modal-cta" href="#contacto" onClick={() => setModalService(null)}>
+            <MagneticButton className="button button-premium modal-cta" href="#contacto" onClick={() => setModalService(null)}>
               {t('services.cta')} <span aria-hidden="true">→</span>
             </MagneticButton>
           </div>
