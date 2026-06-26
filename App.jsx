@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import translations from './translations';
 import logoImg from './logo.png';
 import waLogoImg from './whatsappLogo.png';
+import heroSlide1 from './image copy.png';
+import heroSlide2 from './image copy 2.png';
+import heroSlide3 from './image copy 3.png';
+
+const HERO_SLIDES = [heroSlide1, heroSlide2, heroSlide3];
 
 /* ─── HOOKS ────────────────────────────────────────────────────── */
 
@@ -388,15 +393,19 @@ function AnimatedMetric({ value, label }) {
 }
 
 /* ─── TICKER ────────────────────────────────────────────────────── */
-const TICKER_ITEMS = ['Estrategia', 'Visibilidad', 'Posicionamiento', 'Identidad', 'Crecimiento', 'Dirección', 'Resultados'];
+const TICKER_ITEMS = {
+  es: ['Estrategia', 'Visibilidad', 'Posicionamiento', 'Identidad', 'Crecimiento', 'Dirección', 'Resultados'],
+  en: ['Strategy', 'Visibility', 'Positioning', 'Identity', 'Growth', 'Direction', 'Results'],
+};
 
-function Ticker() {
-  const items = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS]; // triplicate for seamless loop
+function Ticker({ locale = 'es' }) {
+  const baseItems = TICKER_ITEMS[locale] || TICKER_ITEMS.es;
+  const items = [...baseItems, ...baseItems, ...baseItems]; // triplicate for seamless loop
   return (
     <div className="ticker" aria-hidden="true">
       <div className="ticker-inner">
         {items.map((item, i) => (
-          <span key={i} className="ticker-item">
+          <span key={`${locale}-${i}`} className="ticker-item">
             {item}
             <span className="ticker-sep" />
           </span>
@@ -426,6 +435,8 @@ function App() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeMethodStep, setActiveMethodStep] = useState(0);
   const [modalService, setModalService] = useState(null);
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const servicesRef = useRef(null);
   const globalCanvasRef = useRef(null);
 
@@ -454,6 +465,37 @@ function App() {
     const id = setInterval(() => setActiveHeroWord(i => (i + 1) % heroWords.length), 1300);
     return () => clearInterval(id);
   }, [heroWords.length]);
+
+  // Hero carousel auto-play
+  useEffect(() => {
+    const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (rm) return;
+    const id = setInterval(() => setHeroSlide(i => (i + 1) % HERO_SLIDES.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Close mobile menu on scroll
+  useEffect(() => {
+    const fn = () => { if (isMobileMenuOpen) setIsMobileMenuOpen(false); };
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, [isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
+
+  const closeMobileMenu = useCallback((href) => {
+    setIsMobileMenuOpen(false);
+    if (href) {
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  }, []);
 
   useEffect(() => {
     const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -507,23 +549,77 @@ function App() {
       <div className="cursor-dot" ref={dotRef} />
       <div className="cursor-ring" ref={ringRef} />
 
+      {/* ── MOBILE MENU OVERLAY ── */}
+      <div className={`mobile-menu-overlay${isMobileMenuOpen ? ' open' : ''}`} aria-hidden={!isMobileMenuOpen}>
+        <div className="mobile-menu-backdrop" onClick={() => setIsMobileMenuOpen(false)} />
+        <nav className="mobile-menu-drawer" aria-label="Menú de navegación móvil">
+          <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)} aria-label="Cerrar menú" type="button">
+            ✕
+          </button>
+          <a className="brand mobile-menu-brand" href="#inicio" onClick={() => closeMobileMenu('#inicio')}>
+            <img src={logoImg} className="brand-logo" alt="SCALIA Logo" />
+          </a>
+          <div className="mobile-menu-links">
+            <a href="#inicio" className="mobile-nav-link" onClick={() => closeMobileMenu('#inicio')}>
+              <span className="mobile-nav-num">01</span>{t('nav.home')}
+            </a>
+            <a href="#servicios" className="mobile-nav-link" onClick={() => closeMobileMenu('#servicios')}>
+              <span className="mobile-nav-num">02</span>{t('nav.services')}
+            </a>
+            <a href="#como-funciona" className="mobile-nav-link" onClick={() => closeMobileMenu('#como-funciona')}>
+              <span className="mobile-nav-num">03</span>{t('nav.how')}
+            </a>
+            <a href="#diferencial" className="mobile-nav-link" onClick={() => closeMobileMenu('#diferencial')}>
+              <span className="mobile-nav-num">04</span>{t('nav.difference')}
+            </a>
+            <a href="#contacto" className="mobile-nav-link" onClick={() => closeMobileMenu('#contacto')}>
+              <span className="mobile-nav-num">05</span>{t('nav.contact')}
+            </a>
+          </div>
+          <a className="mobile-menu-cta button-header-cta" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
+            {t('nav.cta')}
+          </a>
+          <div className="mobile-menu-locale">
+            <button className={`locale${locale === 'es' ? ' active' : ''}`} type="button" onClick={() => setLocale('es')}>SPA</button>
+            <button className={`locale${locale === 'en' ? ' active' : ''}`} type="button" onClick={() => setLocale('en')}>ENG</button>
+          </div>
+        </nav>
+      </div>
+
       {/* ── TOPBAR ── */}
       <header className={`topbar${topbarScrolled ? ' scrolled' : ''}`}>
         <div className="brand-logo-container">
+          <button
+            className="hamburger-btn"
+            onClick={() => setIsMobileMenuOpen(o => !o)}
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isMobileMenuOpen}
+            type="button"
+          >
+            <span className={`hamburger-line${isMobileMenuOpen ? ' open' : ''}`} />
+            <span className={`hamburger-line${isMobileMenuOpen ? ' open' : ''}`} />
+            <span className={`hamburger-line${isMobileMenuOpen ? ' open' : ''}`} />
+          </button>
           <a className="brand" href="#inicio" aria-label="SCALIA inicio">
             <img src={logoImg} className="brand-logo" alt="SCALIA Logo" />
           </a>
         </div>
 
         <nav className="desktop-nav" aria-label="Navegación principal">
+          <a href="#inicio" className={`nav-pill${activeSection === '' ? ' active' : ''}`}>
+            {locale === 'es' ? 'INICIO' : 'HOME'}
+          </a>
           <a href="#servicios" className={`nav-pill${activeSection === 'servicios' ? ' active' : ''}`}>
-            {locale === 'es' ? 'DISEÑO' : 'DESIGN'}
+            {locale === 'es' ? 'SERVICIOS' : 'SERVICES'}
           </a>
           <a href="#como-funciona" className={`nav-pill${activeSection === 'como-funciona' ? ' active' : ''}`}>
-            {locale === 'es' ? 'CRECIMIENTO' : 'GROWTH'}
+            {locale === 'es' ? 'CÓMO FUNCIONA' : 'HOW IT WORKS'}
           </a>
           <a href="#diferencial" className={`nav-pill${activeSection === 'diferencial' ? ' active' : ''}`}>
-            {locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING'}
+            {locale === 'es' ? 'DIFERENCIAL' : 'DIFFERENCE'}
+          </a>
+          <a href="#contacto" className={`nav-pill${activeSection === 'contacto' ? ' active' : ''}`}>
+            {locale === 'es' ? 'CONTACTO' : 'CONTACT'}
           </a>
         </nav>
 
@@ -538,37 +634,62 @@ function App() {
 
       <main>
         {/* ── HERO ── */}
-        <section id="inicio" className="hero section-dark">
-          <div className="hero-orbs" aria-hidden="true">
-            <div className="orb orb-1" />
-            <div className="orb orb-2" />
-            <div className="orb orb-3" />
-            <div className="orb orb-4" />
-          </div>
+        <section id="inicio" className="hero-wrapper section-dark">
 
-          <div className="container hero-content">
-            <h1 className="hero-title">
-              <span className="hero-line-1">{t('hero.title.before')}</span>
-              <span key={activeHeroWord + locale} className="accent hero-word-carousel">
-                {heroWords[activeHeroWord]}
-              </span>
-              <span className="hero-line-3">{t('hero.title.after')}</span>
-            </h1>
-            <p className="hero-copy">{t('hero.copy')}</p>
-            <div className="hero-actions">
-              <MagneticButton className="button button-premium hero-cta-anim" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
-              <MagneticButton className="button button-ghost hero-cta-anim hero-cta-delay" href="#como-funciona">{t('hero.cta.cases')}</MagneticButton>
+          {/* ── Part 1: Image Carousel ── */}
+          <div className="hero-carousel-wrapper">
+            <div className="hero-bg-carousel" aria-hidden="true">
+              {HERO_SLIDES.map((src, i) => (
+                <div
+                  key={i}
+                  className={`hero-bg-slide${i === heroSlide ? ' active' : ''}`}
+                  style={{ backgroundImage: `url(${src})` }}
+                />
+              ))}
+              <div className="hero-bg-overlay" />
+            </div>
+
+            {/* Slide pill tabs at bottom of carousel */}
+            <div className="hero-slide-tabs" aria-label="Seleccionar diapositiva">
+              {[
+                { label: locale === 'es' ? 'DISEÑO' : 'DESIGN', href: '#servicios' },
+                { label: locale === 'es' ? 'CRECIMIENTO' : 'GROWTH', href: '#como-funciona' },
+                { label: locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING', href: '#diferencial' },
+              ].map((tab, i) => (
+                <a
+                  key={tab.label}
+                  href={tab.href}
+                  className={`hero-slide-tab${i === heroSlide ? ' active' : ''}`}
+                  onClick={() => setHeroSlide(i)}
+                >
+                  {tab.label}
+                </a>
+              ))}
             </div>
           </div>
 
-          <div className="hero-scroll" aria-hidden="true">
-            <div className="hero-scroll-line" />
-            <div className="hero-scroll-dot" />
+          {/* ── Part 2: Text Content Below Carousel ── */}
+          <div className="hero-text-block">
+            <div className="container">
+              <h1 className="hero-title">
+                <span className="hero-line-1">{t('hero.title.before')}</span>
+                <span key={activeHeroWord + locale} className="accent hero-word-carousel">
+                  {heroWords[activeHeroWord]}
+                </span>
+                <span className="hero-line-3">{t('hero.title.after')}</span>
+              </h1>
+              <p className="hero-copy">{t('hero.copy')}</p>
+              <div className="hero-actions">
+                <MagneticButton className="button button-premium hero-cta-anim" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer">{t('hero.cta')} <span aria-hidden="true">→</span></MagneticButton>
+                <MagneticButton className="button button-ghost hero-cta-anim hero-cta-delay" href="#como-funciona">{t('hero.cta.cases')}</MagneticButton>
+              </div>
+            </div>
           </div>
+
         </section>
 
         {/* ── TICKER ── */}
-        <Ticker />
+        <Ticker locale={locale} />
 
         {/* ── STATEMENT ── */}
         <section className="statement section-light">
