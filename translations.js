@@ -5,7 +5,7 @@ const translations = {
     'nav.how': 'Cómo funciona',
     'nav.difference': 'Diferencial',
     'nav.contact': 'Contacto',
-    'nav.cta': 'Agendar consulta',
+    'nav.cta': 'Contáctanos',
 
     'hero.eyebrow': 'Consultoría estratégica de marca',
     'hero.title.before': 'Tu marca.',
@@ -144,7 +144,7 @@ const translations = {
     'nav.how': 'How It Works',
     'nav.difference': 'Difference',
     'nav.contact': 'Contact',
-    'nav.cta': 'Book a Call',
+    'nav.cta': 'Contact Us',
 
     'hero.eyebrow': 'Strategic brand consulting',
     'hero.title.before': 'Your brand.',

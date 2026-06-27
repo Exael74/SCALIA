@@ -648,27 +648,9 @@ function App() {
               ))}
               <div className="hero-bg-overlay" />
             </div>
-
-            {/* Slide pill tabs at bottom of carousel */}
-            <div className="hero-slide-tabs" aria-label="Seleccionar diapositiva">
-              {[
-                { label: locale === 'es' ? 'DISEÑO' : 'DESIGN', href: '#servicios' },
-                { label: locale === 'es' ? 'CRECIMIENTO' : 'GROWTH', href: '#como-funciona' },
-                { label: locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING', href: '#diferencial' },
-              ].map((tab, i) => (
-                <a
-                  key={tab.label}
-                  href={tab.href}
-                  className={`hero-slide-tab${i === heroSlide ? ' active' : ''}`}
-                  onClick={() => setHeroSlide(i)}
-                >
-                  {tab.label}
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* ── Part 2: Text Content Below Carousel ── */}
+          {/* ── Part 2: Hero Text Content ── */}
           <div className="hero-text-block">
             <div className="container">
               <h1 className="hero-title">
@@ -693,6 +675,31 @@ function App() {
 
         {/* ── STATEMENT ── */}
         <section className="statement section-light">
+          {/* Pillar Navigation Tabs — at the top of this section */}
+          <div className="hero-slide-tabs" aria-label="Seleccionar pilar">
+            {[
+              { label: locale === 'es' ? 'DISEÑO' : 'DESIGN', pillar: 0 },
+              { label: locale === 'es' ? 'CRECIMIENTO' : 'GROWTH', pillar: 1 },
+              { label: locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING', pillar: 2 },
+            ].map((tab, i) => (
+              <a
+                key={tab.label}
+                href="#servicios"
+                className={`hero-slide-tab${i === heroSlide ? ' active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setHeroSlide(i);
+                  scrollToService(tab.pillar);
+                  setTimeout(() => {
+                    const el = document.getElementById('servicios');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 50);
+                }}
+              >
+                {tab.label}
+              </a>
+            ))}
+          </div>
           <FloatingOrbs variant="light" />
           <div className="container statement-grid">
             <div className="reveal-left">
