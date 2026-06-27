@@ -126,7 +126,7 @@ const translations = {
     'footer.copy': 'Estrategia, clientes y visibilidad para que tu negocio se vea profesional, atraiga oportunidades y crezca con propósito.',
     'footer.nav': 'Navegación',
     'footer.connect': 'Conectar',
-    'footer.copyright': '© 2026 SCALIA. Todos los derechos reservados.',
+    'footer.copyright': 'SCALIA LLC',
 
     'testimonials.eyebrow': 'Lo que dicen',
     'testimonials.title': 'Casos que ',
@@ -267,7 +267,7 @@ const translations = {
     'footer.copy': 'Strategy, clients, and visibility so your business looks professional, attracts opportunities, and grows with purpose.',
     'footer.nav': 'Navigation',
     'footer.connect': 'Connect',
-    'footer.copyright': '© 2026 SCALIA. All rights reserved.',
+    'footer.copyright': 'SCALIA LLC',
 
     'testimonials.eyebrow': 'What they say',
     'testimonials.title': 'Cases that ',
