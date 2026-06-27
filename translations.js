@@ -32,7 +32,7 @@ const translations = {
     'statement.title': 'Nosotros la ',
     'statement.title.accent': 'construimos.',
     'statement.copy':
-      'Estrategia, clientes y visibilidad son tres piezas que mueven un negocio. SCALIA las trabaja juntas para que tu marca no solo se vea bien, sino que genere oportunidades reales.',
+      'Diseño, clientes y visibilidad — los tres pilares que mueven un negocio. SCALIA los trabaja juntos para que tu marca no solo se vea bien, sino que genere oportunidades reales.',
 
     'results.quote':
       '"Una marca no crece solo por verse bonita. Crece cuando transmite confianza, claridad y profesionalismo en cada punto de contacto."',
@@ -136,6 +136,11 @@ const translations = {
       { text: 'Pasamos de tener una marca que pasaba desapercibida a una que abre puertas. El proceso fue claro y los resultados llegaron rápido.', name: 'Carlos Mejía', role: 'CEO, InnovaTech' },
       { text: 'Sabíamos que necesitábamos cambiar pero no sabíamos por dónde empezar. SCALIA nos dio la dirección y la ejecución que necesitábamos.', name: 'Ana Lucía Torres', role: 'Fundadora, Armonía Studio' },
     ],
+    'showcase.0.eyebrow': 'IDENTIDAD & PRODUCCIÓN',
+    'showcase.1.eyebrow': 'CLIENTES SIN PUBLICIDAD PAGA',
+    'showcase.2.eyebrow': 'ESTRATEGIA & PRESENCIA',
+    'showcase.includes': 'INCLUYE',
+    'showcase.cta': 'Ver servicios completos',
     'floating.wa': 'WA',
   },
   en: {
@@ -169,7 +174,7 @@ const translations = {
     'statement.eyebrow': 'Your brand should open doors.',
     'statement.title': 'We ',
     'statement.title.accent': 'build it.',
-    'statement.copy': 'Strategy, clients, and visibility are three pieces that move a business. SCALIA works them together so your brand not only looks good but generates real opportunities.',
+    'statement.copy': 'Design, clients, and visibility — the three pillars that move a business. SCALIA works them together so your brand not only looks good but generates real opportunities.',
 
     'results.quote': '"A brand doesn\'t grow just by looking pretty. It grows when it conveys confidence, clarity, and professionalism at every touchpoint."',
 
@@ -272,6 +277,11 @@ const translations = {
       { text: 'We went from having a brand that went unnoticed to one that opens doors. The process was clear and results came quickly.', name: 'Carlos Mejía', role: 'CEO, InnovaTech' },
       { text: 'We knew we needed to change but didn\'t know where to start. SCALIA gave us the direction and execution we needed.', name: 'Ana Lucía Torres', role: 'Founder, Armonía Studio' },
     ],
+    'showcase.0.eyebrow': 'IDENTITY & PRODUCTION',
+    'showcase.1.eyebrow': 'CLIENTS WITHOUT PAID ADS',
+    'showcase.2.eyebrow': 'STRATEGY & PRESENCE',
+    'showcase.includes': 'INCLUDES',
+    'showcase.cta': 'See full services',
     'floating.wa': 'WA',
   },
 };

@@ -6,7 +6,7 @@ import heroSlide1 from './image copy.png';
 import heroSlide2 from './image copy 2.png';
 import heroSlide3 from './image copy 3.png';
 
-const HERO_SLIDES = [heroSlide1, heroSlide2, heroSlide3];
+const HERO_SLIDES = [heroSlide1, heroSlide3, heroSlide2];
 
 /* ─── HOOKS ────────────────────────────────────────────────────── */
 
@@ -429,7 +429,7 @@ function FloatingOrbs({ variant = 'dark' }) {
 
 /* ─── MAIN APP ──────────────────────────────────────────────────── */
 function App() {
-  const [locale, setLocale] = useState('es');
+  const [locale, setLocale] = useState('en');
   const [activeHeroWord, setActiveHeroWord] = useState(0);
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -635,22 +635,6 @@ function App() {
       <main>
         {/* ── HERO ── */}
         <section id="inicio" className="hero-wrapper section-dark">
-
-          {/* ── Part 1: Image Carousel ── */}
-          <div className="hero-carousel-wrapper">
-            <div className="hero-bg-carousel" aria-hidden="true">
-              {HERO_SLIDES.map((src, i) => (
-                <div
-                  key={i}
-                  className={`hero-bg-slide${i === heroSlide ? ' active' : ''}`}
-                  style={{ backgroundImage: `url(${src})` }}
-                />
-              ))}
-              <div className="hero-bg-overlay" />
-            </div>
-          </div>
-
-          {/* ── Part 2: Hero Text Content ── */}
           <div className="hero-text-block">
             <div className="container">
               <h1 className="hero-title">
@@ -667,15 +651,43 @@ function App() {
               </div>
             </div>
           </div>
+        </section>
 
+        {/* ── BRAND STATEMENT ── */}
+        <section className="brand-statement section-light">
+          <div className="container brand-statement-grid">
+            <div className="brand-statement-headline">
+              <span className="bs-line-1">{t('statement.eyebrow').split(' ').slice(0, -2).join(' ')}</span>
+              <span className="bs-line-2">{t('statement.eyebrow').split(' ').slice(-2).join(' ')}</span>
+              <span className="bs-line-3">{t('statement.title').trim()}</span>
+              <span className="bs-line-4">{t('statement.title.accent')}</span>
+            </div>
+            <p className="brand-statement-copy">
+              {t('statement.copy')}
+            </p>
+          </div>
         </section>
 
         {/* ── TICKER ── */}
         <Ticker locale={locale} />
 
-        {/* ── STATEMENT ── */}
-        <section className="statement section-light">
-          {/* Pillar Navigation Tabs — at the top of this section */}
+        {/* ── SERVICE SHOWCASE ── */}
+        <section className="service-showcase section-dark">
+          {/* Image carousel — changes with active tab */}
+          <div className="service-showcase-carousel">
+            <div className="hero-bg-carousel" aria-hidden="true">
+              {HERO_SLIDES.map((src, i) => (
+                <div
+                  key={i}
+                  className={`hero-bg-slide${i === heroSlide ? ' active' : ''}`}
+                  style={{ backgroundImage: `url(${src})` }}
+                />
+              ))}
+              <div className="hero-bg-overlay" />
+            </div>
+          </div>
+
+          {/* Pillar Navigation Tabs */}
           <div className="hero-slide-tabs" aria-label="Seleccionar pilar">
             {[
               { label: locale === 'es' ? 'DISEÑO' : 'DESIGN', pillar: 0 },
@@ -700,17 +712,37 @@ function App() {
               </a>
             ))}
           </div>
-          <FloatingOrbs variant="light" />
-          <div className="container statement-grid">
-            <div className="reveal-left">
-              <p className="eyebrow eyebrow-dark">{t('statement.eyebrow')}</p>
-              <h2 className="section-title section-title-dark">
-                {t('statement.title')}<span className="accent-dark">{t('statement.title.accent')}</span>
+
+          {/* 2-column content */}
+          <div className="container showcase-grid">
+            <div className="showcase-left reveal-left">
+              <p className="eyebrow">{t(`showcase.${heroSlide}.eyebrow`)}</p>
+              <h2 className="section-title">
+                {services[heroSlide]?.label}
               </h2>
+              <p className="showcase-desc">
+                {services[heroSlide]?.description}
+              </p>
             </div>
-            <p className="section-copy section-copy-dark reveal-right">
-              {t('statement.copy')}
-            </p>
+            <div className="showcase-right reveal-right">
+              <span className="showcase-label">{t('showcase.includes')}</span>
+              <div className="showcase-chips">
+                {services[heroSlide]?.deliverables?.map((item, i) => (
+                  <span key={item + locale} className="showcase-chip" style={{ animationDelay: `${i * 60}ms` }}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <MagneticButton className="button button-primary showcase-cta" onClick={() => {
+                scrollToService(heroSlide);
+                setTimeout(() => {
+                  const el = document.getElementById('servicios');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+              }}>
+                {t('showcase.cta')} <span aria-hidden="true">→</span>
+              </MagneticButton>
+            </div>
           </div>
         </section>
 
