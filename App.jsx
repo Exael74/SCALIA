@@ -427,101 +427,6 @@ function FloatingOrbs({ variant = 'dark' }) {
   );
 }
 
-/* ─── STAGE ICONS (PR pillar) ───────────────────────────────────── */
-const STAGE_ICON_PATHS = {
-  strategy: (
-    <>
-      <circle cx="12" cy="12" r="8.5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
-      <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" />
-    </>
-  ),
-  press: (
-    <>
-      <path d="M3 5.5h13.5v13H5a2 2 0 0 1-2-2z" />
-      <path d="M16.5 9H21v7.5a2 2 0 0 1-2 2h-2.5z" />
-      <path d="M6 9h7.5M6 12.5h7.5M6 16h4.5" />
-    </>
-  ),
-  mic: (
-    <>
-      <rect x="9" y="2.5" width="6" height="11" rx="3" />
-      <path d="M5.5 11a6.5 6.5 0 0 0 13 0" />
-      <path d="M12 17.5v4M8.5 21.5h7" />
-    </>
-  ),
-  megaphone: (
-    <>
-      <path d="M3.5 9.5v5a1.5 1.5 0 0 0 1.5 1.5h2l7 4.5V3.5l-7 4.5H5a1.5 1.5 0 0 0-1.5 1.5z" />
-      <path d="M17.5 8.5a5 5 0 0 1 0 7" />
-      <path d="M20 6a8.5 8.5 0 0 1 0 12" />
-    </>
-  ),
-  shield: (
-    <>
-      <path d="M12 2.5 4.5 5.5v6c0 5 3.2 8.7 7.5 10 4.3-1.3 7.5-5 7.5-10v-6z" />
-      <path d="M8.75 11.75 11 14l4.25-4.25" />
-    </>
-  ),
-  mail: (
-    <>
-      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
-      <path d="M3 7l7.7 5.4a2.3 2.3 0 0 0 2.6 0L21 7" />
-    </>
-  ),
-  linkedin: (
-    <>
-      <rect x="3" y="3" width="18" height="18" rx="3.5" />
-      <circle cx="7.6" cy="8" r="1" fill="currentColor" stroke="none" />
-      <path d="M7.6 11v6" />
-      <path d="M11.6 17v-6" />
-      <path d="M11.6 13.4c0-1.3 1-2.4 2.5-2.4s2.7 1 2.7 2.9V17" />
-    </>
-  ),
-  chat: (
-    <>
-      <path d="M3 5.5h11.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5H8l-3.5 3v-3H3a1.5 1.5 0 0 1-1.5-1.5" />
-      <path d="M19 9.5h1.5A1.5 1.5 0 0 1 22 11v4.5a1.5 1.5 0 0 1-1.5 1.5H19v3l-3.5-3h-3" />
-    </>
-  ),
-  calendar: (
-    <>
-      <rect x="3" y="5" width="18" height="16" rx="2.5" />
-      <path d="M3 9.5h18M8 2.5v4M16 2.5v4" />
-      <path d="M9 15l2 2 4-4" />
-    </>
-  ),
-};
-
-function StageIcon({ name }) {
-  const paths = STAGE_ICON_PATHS[name];
-  if (!paths) return null;
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"
-      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      {paths}
-    </svg>
-  );
-}
-
-/** Tiny ascending growth chart used in the reputation stage */
-function TrendSpark() {
-  return (
-    <svg className="stage-trend" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--blue)" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="var(--blue)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d="M0 34 L24 29 L48 24 L72 15 L96 11 L120 3 L120 40 L0 40 Z" fill="url(#trend-fill)" />
-      <path d="M0 34 L24 29 L48 24 L72 15 L96 11 L120 3" fill="none" stroke="var(--blue-soft)"
-        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stage-trend-line" />
-    </svg>
-  );
-}
-
 /* ─── MAIN APP ──────────────────────────────────────────────────── */
 function App() {
   const [locale, setLocale] = useState('en');
@@ -816,9 +721,7 @@ function App() {
                 {services[heroSlide]?.label}
               </h2>
               <p className="showcase-desc">
-                {services[heroSlide]?.claim
-                  ? `${services[heroSlide].claim} ${services[heroSlide].description}`
-                  : services[heroSlide]?.description}
+                {services[heroSlide]?.description}
               </p>
             </div>
             <div className="showcase-right reveal-right">
@@ -1116,43 +1019,20 @@ function App() {
         <div className="modal-overlay" onClick={() => setModalService(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setModalService(null)} type="button" aria-label="Cerrar">✕</button>
-            <span className="modal-eyebrow">
-              {modalServiceData.eyebrow}
-              {modalServiceData.sublabel && <span className="modal-sublabel">{modalServiceData.sublabel}</span>}
-            </span>
+            <span className="modal-eyebrow">{modalServiceData.eyebrow}</span>
             <h3 className="modal-title">{modalServiceData.headline}</h3>
-            {modalServiceData.claim && <p className="modal-claim">{modalServiceData.claim}</p>}
             <p className="modal-desc">{modalServiceData.description}</p>
-
-            {modalServiceData.tagline && (
-              <div className="modal-tagline" aria-hidden="true">
-                {modalServiceData.tagline.map(word => (
-                  <span key={word} className="modal-tagline-word">{word}</span>
-                ))}
-              </div>
-            )}
 
             <div className="modal-meta">
               <div className="modal-meta-item">
                 <span className="modal-meta-label">{locale === 'es' ? 'Para quién' : 'For whom'}</span>
                 <span className="modal-meta-value">{modalServiceData.audience}</span>
               </div>
-            </div>
-
-            {modalServiceData.flow && (
-              <div className="modal-flow">
-                <h4 className="modal-section-title">{modalServiceData.flowTitle}</h4>
-                <ol className="flow-track">
-                  {modalServiceData.flow.map((node, i) => (
-                    <li key={node.n} className="flow-node" style={{ animationDelay: `${i * 110}ms` }}>
-                      <span className="flow-dot" aria-hidden="true">{node.n}</span>
-                      <span className="flow-step">{node.step}</span>
-                      <span className="flow-action">{node.action}</span>
-                    </li>
-                  ))}
-                </ol>
+              <div className="modal-meta-item">
+                <span className="modal-meta-label">{locale === 'es' ? 'Tiempo estimado' : 'Estimated time'}</span>
+                <span className="modal-meta-value">{modalServiceData.timeline}</span>
               </div>
-            )}
+            </div>
 
             <div className="modal-deliverables">
               <h4 className="modal-section-title">{locale === 'es' ? 'Incluye' : 'Includes'}</h4>
@@ -1166,98 +1046,14 @@ function App() {
               </div>
             </div>
 
-            {modalServiceData.stages && (
-              <div className="modal-stages">
-                <h4 className="modal-section-title">{modalServiceData.stagesTitle}</h4>
-                <ol className="stage-list">
-                  {modalServiceData.stages.map((stage, i) => (
-                    <li key={stage.n} className="stage-item" style={{ animationDelay: `${i * 90}ms` }}>
-                      <span className="stage-marker" aria-hidden="true">
-                        <StageIcon name={stage.icon} />
-                      </span>
-                      <div className="stage-body">
-                        <span className="stage-n">{stage.n}</span>
-                        <h5 className="stage-title">{stage.title}</h5>
-                        {stage.subtitle && <span className="stage-subtitle">{stage.subtitle}</span>}
-                        {stage.copy && <p className="stage-copy">{stage.copy}</p>}
-
-                        {stage.features && (
-                          <ul className="stage-features">
-                            {stage.features.map(feature => (
-                              <li key={feature}>{feature}</li>
-                            ))}
-                          </ul>
-                        )}
-
-                        {stage.metric && (
-                          <div className="stage-highlight">
-                            <span className="stage-highlight-value">{stage.metric.value}</span>
-                            <span className="stage-highlight-label">{stage.metric.label}</span>
-                          </div>
-                        )}
-
-                        {stage.media && (
-                          <div className="stage-media">
-                            {stage.media.map(outlet => (
-                              <span key={outlet} className="stage-media-chip">{outlet}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        {stage.badge && (
-                          <div className="stage-badge">
-                            <span className="stage-badge-dot" aria-hidden="true" />
-                            <span className="stage-badge-name">{stage.badge}</span>
-                            <span className="stage-badge-note">{stage.badgeNote}</span>
-                          </div>
-                        )}
-
-                        {stage.metrics && (
-                          <div className="stage-metrics">
-                            {stage.metrics.map(metric => (
-                              <span key={metric} className="stage-metric">{metric}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        {stage.trend && <TrendSpark />}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-
-            {modalServiceData.stats ? (
-              <div className="modal-stats">
-                <h4 className="modal-section-title">{modalServiceData.statsTitle ?? t('services.results')}</h4>
-                <div className="stat-grid">
-                  {modalServiceData.stats.map((stat, i) => (
-                    <div key={stat.label} className="stat-card" style={{ animationDelay: `${i * 70}ms` }}>
-                      <span className="stat-value">{stat.value}</span>
-                      <span className="stat-label">{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="modal-outcomes">
-                <h4 className="modal-section-title">{t('services.results')}</h4>
-                <ul>
-                  {modalServiceData.outcomes.map(outcome => (
-                    <li key={outcome}>{outcome}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {modalServiceData.closing && (
-              <div className="modal-closing">
-                {modalServiceData.closing.map(line => (
-                  <p key={line}>{line}</p>
+            <div className="modal-outcomes">
+              <h4 className="modal-section-title">{t('services.results')}</h4>
+              <ul>
+                {modalServiceData.outcomes.map(outcome => (
+                  <li key={outcome}>{outcome}</li>
                 ))}
-              </div>
-            )}
+              </ul>
+            </div>
 
             <MagneticButton className="button button-premium modal-cta" href="https://wa.me/12023179939?text=Hola%20quiero%20hacer%20crecer%20mi%20marca%20con%20SCALIA" target="_blank" rel="noreferrer" onClick={() => setModalService(null)}>
               {t('services.cta')} <span aria-hidden="true">→</span>
