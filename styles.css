@@ -2026,7 +2026,6 @@ main {
 .modal-desc { margin: 1.2rem 0 0; color: var(--text-dim); font-size: 1rem; line-height: 1.7; }
 .modal-meta {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 2rem;
   padding: 1.2rem 1.4rem;

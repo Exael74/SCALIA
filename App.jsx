@@ -436,6 +436,7 @@ function App() {
   const [activeMethodStep, setActiveMethodStep] = useState(0);
   const [modalService, setModalService] = useState(null);
   const [heroSlide, setHeroSlide] = useState(0);
+  const [heroSlidePaused, setHeroSlidePaused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const servicesRef = useRef(null);
   const globalCanvasRef = useRef(null);
@@ -466,13 +467,13 @@ function App() {
     return () => clearInterval(id);
   }, [heroWords.length]);
 
-  // Hero carousel auto-play
+  // Hero carousel auto-play — stops for good once the visitor picks a pillar
   useEffect(() => {
     const rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (rm) return;
+    if (rm || heroSlidePaused) return;
     const id = setInterval(() => setHeroSlide(i => (i + 1) % HERO_SLIDES.length), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [heroSlidePaused]);
 
   // Close mobile menu on scroll
   useEffect(() => {
@@ -687,29 +688,26 @@ function App() {
             </div>
           </div>
 
-          {/* Pillar Navigation Tabs */}
-          <div className="hero-slide-tabs" aria-label="Seleccionar pilar">
+          {/* Pillar Navigation Tabs — only swap the showcase content, never navigate */}
+          <div className="hero-slide-tabs" role="tablist" aria-label={locale === 'es' ? 'Seleccionar pilar' : 'Select pillar'}>
             {[
-              { label: locale === 'es' ? 'DISEÑO' : 'DESIGN', pillar: 0 },
-              { label: locale === 'es' ? 'CRECIMIENTO' : 'GROWTH', pillar: 1 },
-              { label: locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING', pillar: 2 },
+              { label: locale === 'es' ? 'DISEÑO' : 'DESIGN' },
+              { label: locale === 'es' ? 'CRECIMIENTO' : 'GROWTH' },
+              { label: locale === 'es' ? 'POSICIONAMIENTO' : 'POSITIONING' },
             ].map((tab, i) => (
-              <a
+              <button
                 key={tab.label}
-                href="#servicios"
+                type="button"
+                role="tab"
+                aria-selected={i === heroSlide}
                 className={`hero-slide-tab${i === heroSlide ? ' active' : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
+                onClick={() => {
                   setHeroSlide(i);
-                  scrollToService(tab.pillar);
-                  setTimeout(() => {
-                    const el = document.getElementById('servicios');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }, 50);
+                  setHeroSlidePaused(true);
                 }}
               >
                 {tab.label}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -1027,10 +1025,6 @@ function App() {
               <div className="modal-meta-item">
                 <span className="modal-meta-label">{locale === 'es' ? 'Para quién' : 'For whom'}</span>
                 <span className="modal-meta-value">{modalServiceData.audience}</span>
-              </div>
-              <div className="modal-meta-item">
-                <span className="modal-meta-label">{locale === 'es' ? 'Tiempo estimado' : 'Estimated time'}</span>
-                <span className="modal-meta-value">{modalServiceData.timeline}</span>
               </div>
             </div>
 
